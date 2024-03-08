@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload de Arquivos</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .upload-container {
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      background-color: #ffffff;
+    }
+
+    .custom-file-label {
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .btn-upload {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="upload-container">
+    <h1 class="mb-4">Upload de Arquivos</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <div class="custom-file mb-3">
+        <input type="file" class="custom-file-input" id="fileInput" name="file" accept=".csv, .xlsx" required>
+        <label class="custom-file-label" for="fileInput">Escolha um arquivo</label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-upload">Enviar</button>
+    </form>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

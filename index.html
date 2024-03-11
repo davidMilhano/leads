@@ -40,9 +40,10 @@
             height: 50%;
             margin-right: 60px;
         }
-        .naruto{
-          background-color: #8eacd4;
-         color: rgb(255, 255, 255);
+
+        .naruto {
+            background-color: #8eacd4;
+            color: rgb(255, 255, 255);
         }
     </style>
 </head>
@@ -73,7 +74,7 @@
                         const button = document.createElement('button');
                         button.textContent = artist.NOME_ARTISTA;
                         button.setAttribute('data-target', `fileInput${index + 1}`);
-                        button.classList.add('btn','naruto'); // Adicionei a classe btn-success
+                        button.classList.add('btn', 'naruto'); // Adicionei a classe btn-success
                         container.appendChild(button);
 
                         const inputFile = document.createElement('input');

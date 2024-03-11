@@ -64,7 +64,6 @@ app.post('/upload', upload.single('file'), (req, res) => {
     const batchSize = 300;
     const batches = [];
 
-
     for (let i = 0; i < data.length; i += batchSize) {
         const batch = data.slice(i, i + batchSize);
       
@@ -82,8 +81,6 @@ app.post('/upload', upload.single('file'), (req, res) => {
     return res.status(400).send('Formato de arquivo não suportado. Use CSV ou XLSX.');
   }
 });
-
 app.listen(port, () => {
   console.log(`Servidor está rodando em http://localhost:${port}`);
 });
-

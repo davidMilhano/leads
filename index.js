@@ -16,12 +16,34 @@ const outputDir = path.join(__dirname, 'output');
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
 }
-
+app.use('/imagens', express.static('imagens'));
 // Rota raiz para carregar o arquivo HTML
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
+const bodyParser = require('body-parser');
 
+// Configure o body-parser para lidar com dados POST
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// Rota para retornar os dados dos artistas
+app.get('/get_artistas', (req, res) => {
+  // Simule os dados do banco de dados
+  const rows = [
+    { NOME_ARTISTA: 'Artista 1' },
+    { NOME_ARTISTA: 'Artista 2' },
+    { NOME_ARTISTA: 'Artista 3' },
+    { NOME_ARTISTA: 'anselmo ralph' },
+    { NOME_ARTISTA: 'pokemon' }
+    // Adicione mais dados conforme necessário
+  ];
+
+  res.json(rows);
+});
+
+// Servir arquivos estáticos
+app.use(express.static('public'));
 // Rota para processar o upload do arquivo
 app.post('/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
@@ -41,6 +63,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
     // Divide os dados em grupos de 300
     const batchSize = 300;
     const batches = [];
+
 
     for (let i = 0; i < data.length; i += batchSize) {
         const batch = data.slice(i, i + batchSize);
@@ -63,3 +86,4 @@ app.post('/upload', upload.single('file'), (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor está rodando em http://localhost:${port}`);
 });
+

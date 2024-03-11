@@ -1,54 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload de Arquivos</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    body {
-      background-color: #f8f9fa;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Arquivos</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #004391;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
 
-    .upload-container {
-      text-align: center;
-      padding: 20px;
-      border: 1px solid #ced4da;
-      border-radius: 8px;
-      background-color: #ffffff;
-    }
+        .upload-container {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #004391;
+            border-radius: 8px;
+            margin-right: 60px;
+        }
 
-    .custom-file-label {
-      overflow: hidden;
-      white-space: nowrap;
-    }
+        .custom-file-label {
+            overflow: hidden;
+            white-space: nowrap;
+        }
 
-    .btn-upload {
-      margin-top: 10px;
-    }
-  </style>
+        .btn-upload {
+            margin-top: 10px;
+        }
+
+        img {
+            width: 30%;
+            height: 50%;
+            margin-right: 60px;
+        }
+        .naruto{
+          background-color: #8eacd4;
+         color: rgb(255, 255, 255);
+        }
+    </style>
 </head>
+
 <body>
+    <img src="imagens/LOGO.png">
 
-  <div class="upload-container">
-    <h1 class="mb-4">Upload de Arquivos</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <div class="custom-file mb-3">
-        <input type="file" class="custom-file-input" id="fileInput" name="file" accept=".csv, .xlsx" required>
-        <label class="custom-file-label" for="fileInput">Escolha um arquivo</label>
-      </div>
-      <button type="submit" class="btn btn-primary btn-upload">Enviar</button>
-    </form>
-  </div>
+    <div class="upload-container">
+        <h1 class="mb-4">Upload de Arquivos</h1>
+        <div id="artistas-container">
+            <!-- Os botões e inputs de arquivo serão adicionados dinamicamente aqui -->
+        </div>
+        <button id="btnVoltar" style="display: none;" class="btn btn-secondary mt-3">Voltar</button>
+    </div>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                const response = await fetch('/get_artistas');
+                const artistas = await response.json();
+
+                if (response.ok && Array.isArray(artistas)) {
+                    const container = document.getElementById('artistas-container');
+                    const btnVoltar = document.getElementById('btnVoltar');
+                    let botaoClicado = null;
+
+                    artistas.forEach((artist, index) => {
+                        const button = document.createElement('button');
+                        button.textContent = artist.NOME_ARTISTA;
+                        button.setAttribute('data-target', `fileInput${index + 1}`);
+                        button.classList.add('btn','naruto'); // Adicionei a classe btn-success
+                        container.appendChild(button);
+
+                        const inputFile = document.createElement('input');
+                        inputFile.type = 'file';
+                        inputFile.style.display = 'none';
+                        inputFile.id = `fileInput${index + 1}`;
+                        container.appendChild(inputFile);
+                    });
+
+                    const botoes = document.querySelectorAll('#artistas-container button');
+
+                    botoes.forEach(botao => {
+                        botao.addEventListener('click', function () {
+                            // Armazena o botão clicado
+                            botaoClicado = this;
+
+                            // Oculta todos os inputs, botão de artista e botão "Voltar"
+                            const inputs = document.querySelectorAll('input[type="file"]');
+                            inputs.forEach(input => input.style.display = 'none');
+                            botoes.forEach(b => b.style.display = 'none');
+                            btnVoltar.style.display = 'none';
+
+                            // Mostra o input associado ao botão clicado
+                            const inputId = this.getAttribute('data-target');
+                            const input = document.getElementById(inputId);
+                            input.style.display = 'block';
+
+                            // Mostra o botão "Voltar"
+                            btnVoltar.style.display = 'block';
+                        });
+                    });
+
+                    btnVoltar.addEventListener('click', function () {
+                        // Oculta o input, botão clicado e o botão "Voltar"
+                        const inputId = botaoClicado.getAttribute('data-target');
+                        const input = document.getElementById(inputId);
+                        input.style.display = 'none';
+                        botaoClicado.style.display = 'none';
+                        btnVoltar.style.display = 'none';
+
+                        // Mostra todos os botões de artista
+                        botoes.forEach(botao => botao.style.display = 'block');
+                    });
+
+                } else {
+                    console.error('Erro ao obter dados dos artistas');
+                }
+            } catch (error) {
+                console.error('Erro ao buscar artistas:', error);
+            }
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

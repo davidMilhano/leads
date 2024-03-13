@@ -50,7 +50,6 @@
 
 <body>
     <img src="imagens/LOGO.png">
-
     <div class="upload-container">
         <h1 class="mb-4">Upload de Arquivos</h1>
         <div id="artistas-container">
@@ -59,64 +58,113 @@
         <button id="btnVoltar" style="display: none;" class="btn btn-secondary mt-3">Voltar</button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function () {
+       document.addEventListener('DOMContentLoaded', async function () {
             try {
-                const response = await fetch('/get_artistas');
-                const artistas = await response.json();
+                const response = await axios.get('/get_artistas');
+                const artistas = response.data;
 
-                if (response.ok && Array.isArray(artistas)) {
+                if (Array.isArray(artistas)) {
                     const container = document.getElementById('artistas-container');
                     const btnVoltar = document.getElementById('btnVoltar');
                     let botaoClicado = null;
 
+                    // Criar o formulário
+                    const form = document.createElement('form');
+                    form.action = '/upload';
+                    form.method = 'post';
+                    form.enctype = 'multipart/form-data';
+                    container.appendChild(form);
+
                     artistas.forEach((artist, index) => {
+                        // Criar botão do artista
                         const button = document.createElement('button');
                         button.textContent = artist.NOME_ARTISTA;
+                        button.classList.add('btn', 'naruto');
                         button.setAttribute('data-target', `fileInput${index + 1}`);
-                        button.classList.add('btn', 'naruto'); // Adicionei a classe btn-success
-                        container.appendChild(button);
+                        button.type = 'button'; // Definir o tipo como "button" para evitar redirecionamento
+                        form.appendChild(button);
 
+                        // Criar input de arquivo
                         const inputFile = document.createElement('input');
                         inputFile.type = 'file';
                         inputFile.style.display = 'none';
+                        inputFile.accept = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
                         inputFile.id = `fileInput${index + 1}`;
-                        container.appendChild(inputFile);
-                    });
+                        form.appendChild(inputFile);
 
+                        // Criar botão de envio
+                        const uploadButton = document.createElement('button');
+                        uploadButton.textContent = 'Enviar';
+                        uploadButton.style.display = 'none';
+                        form.appendChild(uploadButton);
+
+                        inputFile.addEventListener('change', function () {
+                            uploadButton.style.display = 'block';
+                        });
+
+                        uploadButton.addEventListener('click', async function () {
+                            const file = inputFile.files[0];
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            const id = inputFile.id.replace('fileInput', '');
+
+                            try {
+                                const response = await axios.post(`/upload/${id}`, formData);
+
+                                if (response.status === 200) {
+                                    console.log('Arquivo enviado com sucesso!');
+                                } else {
+                                    console.error('Erro ao enviar arquivo:', response.statusText);
+                                }
+                            } catch (error) {
+                                console.error('Erro ao enviar arquivo:', error.message);
+                            }
+                        });
+                    });
                     const botoes = document.querySelectorAll('#artistas-container button');
 
                     botoes.forEach(botao => {
                         botao.addEventListener('click', function () {
-                            // Armazena o botão clicado
                             botaoClicado = this;
 
-                            // Oculta todos os inputs, botão de artista e botão "Voltar"
                             const inputs = document.querySelectorAll('input[type="file"]');
                             inputs.forEach(input => input.style.display = 'none');
                             botoes.forEach(b => b.style.display = 'none');
                             btnVoltar.style.display = 'none';
 
-                            // Mostra o input associado ao botão clicado
                             const inputId = this.getAttribute('data-target');
                             const input = document.getElementById(inputId);
                             input.style.display = 'block';
 
-                            // Mostra o botão "Voltar"
                             btnVoltar.style.display = 'block';
                         });
                     });
 
                     btnVoltar.addEventListener('click', function () {
-                        // Oculta o input, botão clicado e o botão "Voltar"
                         const inputId = botaoClicado.getAttribute('data-target');
                         const input = document.getElementById(inputId);
                         input.style.display = 'none';
                         botaoClicado.style.display = 'none';
+                        document.querySelectorAll('button[data-target^="fileInput"]').forEach(btn => btn.style.display = 'block');
+                        document.querySelectorAll('input[type="file"]').forEach(input => input.style.display = 'none');
+                        document.querySelectorAll('button[data-target^="fileInput"]').forEach(btn => btn.style.display = 'block');
                         btnVoltar.style.display = 'none';
+                    });
 
-                        // Mostra todos os botões de artista
-                        botoes.forEach(botao => botao.style.display = 'block');
+            
+
+                    // Adicione aqui a lógica para lidar com os botões "Voltar" e a lógica de ocultar/mostrar inputs
+
+                    // Adicione um event listener para o submit do formulário
+                    form.addEventListener('submit', function (event) {
+                        // Evita que o formulário seja submetido de forma padrão
+                        event.preventDefault();
+                        // Você pode adicionar aqui qualquer lógica adicional que desejar antes de enviar o formulário
+                        // Por exemplo, validar se algum input está preenchido, etc.
+                        // Depois, você pode enviar o formulário manualmente, se necessário:
+                        // form.submit();
                     });
 
                 } else {
@@ -126,6 +174,9 @@
                 console.error('Erro ao buscar artistas:', error);
             }
         });
+
+
+
     </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

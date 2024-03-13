@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 
 // Rota para retornar os dados dos artistas
 app.get('/get_artistas', (req, res) => {
-  // Simule os dados do banco de dados
+  
   const rows = [
     { NOME_ARTISTA: 'Artista 1' },
     { NOME_ARTISTA: 'Artista 2' },
@@ -45,12 +45,16 @@ app.get('/get_artistas', (req, res) => {
 // Servir arquivos estáticos
 app.use(express.static('public'));
 // Rota para processar o upload do arquivo
-app.post('/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('Nenhum arquivo enviado.');
-  }
+app.post('/upload/:id', upload.single('file'), (req, res) => {
+  // if (!req.file) {
+  //   return res.status(400).send('Nenhum arquivo enviado.');
+  // 
+  
 
-  // Verifica a extensão do arquivo (csv ou xlsx)
+  const id = req.params.id;
+  console.log(id);
+
+  // Verifica a extensão do arquivo (csv ou
   const fileType = req.file.originalname.split('.').pop().toLowerCase();
 
   if (fileType === 'csv' || fileType === 'xlsx') {
@@ -60,27 +64,22 @@ app.post('/upload', upload.single('file'), (req, res) => {
 
     const data = XLSX.utils.sheet_to_json(sheet);
 
-    // Divide os dados em grupos de 300
     const batchSize = 300;
-    const batches = [];
 
     for (let i = 0; i < data.length; i += batchSize) {
-        const batch = data.slice(i, i + batchSize);
-      
-        // Converte os dados do lote para uma string CSV
-        const csvData = XLSX.utils.sheet_to_csv(XLSX.utils.json_to_sheet(batch));
-      
-        // Salva um arquivo para cada grupo de 300
-        const fileName = `batch_${i / batchSize + 1}.${fileType}`;
-        const filePath = path.join(__dirname, 'output', fileName);
-        fs.writeFileSync(filePath, csvData);
-      }
+      const batch = data.slice(i, i + batchSize);
+      const csvData = XLSX.utils.sheet_to_csv(XLSX.utils.json_to_sheet(batch));
+      const fileName = `batch_${i / batchSize + 1}.${fileType}`;
+      const filePath = path.join(__dirname, 'output', `${id}_${fileName}`);
+      fs.writeFileSync(filePath, csvData);
+    }
 
-    return res.status(200).send('Arquivos divididos e salvos com sucesso.');
+    return res.status(200).send('Arquivos divididos e salvos com sucesso.'+ req.params.id);
   } else {
     return res.status(400).send('Formato de arquivo não suportado. Use CSV ou XLSX.');
   }
 });
+
 app.listen(port, () => {
   console.log(`Servidor está rodando em http://localhost:${port}`);
 });

@@ -30,14 +30,14 @@ app.use(bodyParser.json());
 // Rota para retornar os dados dos artistas
 app.get('/get_artistas', (req, res) => {
   
-  // const rows = [
-  //   { NOME_ARTISTA: 'Artista 1' },
-  //   { NOME_ARTISTA: 'Artista 2' },
-  //   { NOME_ARTISTA: 'Artista 3' },
-  //   { NOME_ARTISTA: 'anselmo ralph' },
-  //   { NOME_ARTISTA: 'pokemon' }
-  //   // Adicione mais dados conforme necessário
-  // ];
+   const rows = [
+    { NOME_ARTISTA: 'Artista 1' },
+    { NOME_ARTISTA: 'Artista 2' },
+    { NOME_ARTISTA: 'Artista 3' },
+    { NOME_ARTISTA: 'anselmo ralph' },
+    { NOME_ARTISTA: 'pokemon' }
+     // Adicione mais dados conforme necessário
+  ];
 
   res.json(rows);
 });

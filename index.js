@@ -30,14 +30,14 @@ app.use(bodyParser.json());
 // Rota para retornar os dados dos artistas
 app.get('/get_artistas', (req, res) => {
   
-  const rows = [
-    { NOME_ARTISTA: 'Artista 1' },
-    { NOME_ARTISTA: 'Artista 2' },
-    { NOME_ARTISTA: 'Artista 3' },
-    { NOME_ARTISTA: 'anselmo ralph' },
-    { NOME_ARTISTA: 'pokemon' }
-    // Adicione mais dados conforme necessário
-  ];
+  // const rows = [
+  //   { NOME_ARTISTA: 'Artista 1' },
+  //   { NOME_ARTISTA: 'Artista 2' },
+  //   { NOME_ARTISTA: 'Artista 3' },
+  //   { NOME_ARTISTA: 'anselmo ralph' },
+  //   { NOME_ARTISTA: 'pokemon' }
+  //   // Adicione mais dados conforme necessário
+  // ];
 
   res.json(rows);
 });
@@ -65,12 +65,12 @@ app.post('/upload/:id', upload.single('file'), (req, res) => {
     const data = XLSX.utils.sheet_to_json(sheet);
 
     const batchSize = 300;
-
+    const random_number = Math.random();
     for (let i = 0; i < data.length; i += batchSize) {
       const batch = data.slice(i, i + batchSize);
       const csvData = XLSX.utils.sheet_to_csv(XLSX.utils.json_to_sheet(batch));
       const fileName = `batch_${i / batchSize + 1}.${fileType}`;
-      const filePath = path.join(__dirname, 'output', `${id}_${fileName}`);
+      const filePath = path.join(__dirname, 'output', `${random_number}_${id}_${fileName}`);
       fs.writeFileSync(filePath, csvData);
     }
 

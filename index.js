@@ -35,7 +35,7 @@ app.get('/get_categorias',async (req, res) => {
       host: 'localhost',
       user: 'root',
       password: '',
-      database: 'leads'
+      database: 'projeto_leads'
     });
 
     // Execute a consulta SQL

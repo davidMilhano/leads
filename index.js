@@ -38,6 +38,8 @@ app.get('/get_categorias',async (req, res) => {
       database: 'projeto_leads'
     });
 
+
+    
     // Execute a consulta SQL
     const [rows] = await connection.query('SELECT nome_categoria FROM business_leads;');
     // Extraia as categorias da resposta do banco de dados

@@ -62,7 +62,7 @@
     <script>
        document.addEventListener('DOMContentLoaded', async function () {
             try {
-                const response = await axios.get('/get_artistas');
+                const response = await axios.get('/get_categorias');
                 const artistas = response.data;
 
                 if (Array.isArray(artistas)) {

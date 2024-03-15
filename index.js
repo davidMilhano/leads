@@ -3,7 +3,7 @@ const multer = require('multer');
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
-
+const mysql = require('mysql2/promise');
 const app = express();
 const port = 3000;
 
@@ -28,18 +28,39 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Rota para retornar os dados dos artistas
-app.get('/get_artistas', (req, res) => {
-  
-   const rows = [
-    { NOME_ARTISTA: 'Artista 1' },
-    { NOME_ARTISTA: 'Artista 2' },
-    { NOME_ARTISTA: 'Artista 3' },
-    { NOME_ARTISTA: 'anselmo ralph' },
-    { NOME_ARTISTA: 'pokemon' }
-     // Adicione mais dados conforme necessário
-  ];
+app.get('/get_categorias',async (req, res) => {
+  try {
+    // Crie uma conexão com o banco de dados
+    const connection = await mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: '',
+      database: 'leads'
+    });
 
-  res.json(rows);
+    // Execute a consulta SQL
+    const [rows] = await connection.query('SELECT nome_categoria FROM business_leads;');
+    // Extraia as categorias da resposta do banco de dados
+    const categorias = rows.map(row => row.category);
+
+    // Encerre a conexão com o banco de dados
+    await connection.end();
+    console.log(categorias);
+    res.json(categorias);
+  } catch (error) {
+    console.error('Erro ao buscar categorias:', error);
+    res.status(500).send('Erro ao buscar categorias.');
+  }
+  
+  //  const rows = [
+  //   { NOME_ARTISTA: 'Artista 1' },
+  //   { NOME_ARTISTA: 'Artista 2' },
+  //   { NOME_ARTISTA: 'Artista 3' },
+  //   { NOME_ARTISTA: 'anselmo ralph' },
+  //   { NOME_ARTISTA: 'pokemon' }
+  //    // Adicione mais dados conforme necessário
+  // ];
+  
 });
 
 // Servir arquivos estáticos

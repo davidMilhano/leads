@@ -28,20 +28,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Rota para retornar os dados dos artistas
-app.get('/get_categorias',async (req, res) => {
+app.get('/get_categorias', async (req, res) => {
   try {
     // Crie uma conexão com o banco de dados
     const connection = await mysql.createConnection({
       host: 'localhost',
       user: 'root',
       password: '',
-      database: 'projeto_leads'
+      database: 'leads'
     });
 
 
-    
+
     // Execute a consulta SQL
-    const [rows] = await connection.query('SELECT nome_categoria FROM business_leads;');
+    const [rows] = await connection.query('SELECT category FROM business_leads;');
     // Extraia as categorias da resposta do banco de dados
     const categorias = rows.map(row => row.category);
 
@@ -53,7 +53,7 @@ app.get('/get_categorias',async (req, res) => {
     console.error('Erro ao buscar categorias:', error);
     res.status(500).send('Erro ao buscar categorias.');
   }
-  
+
   //  const rows = [
   //   { NOME_ARTISTA: 'Artista 1' },
   //   { NOME_ARTISTA: 'Artista 2' },
@@ -62,7 +62,7 @@ app.get('/get_categorias',async (req, res) => {
   //   { NOME_ARTISTA: 'pokemon' }
   //    // Adicione mais dados conforme necessário
   // ];
-  
+
 });
 
 // Servir arquivos estáticos
@@ -72,7 +72,7 @@ app.post('/upload/:id', upload.single('file'), (req, res) => {
   // if (!req.file) {
   //   return res.status(400).send('Nenhum arquivo enviado.');
   // 
-  
+
 
   const id = req.params.id;
   console.log(id);
@@ -97,7 +97,7 @@ app.post('/upload/:id', upload.single('file'), (req, res) => {
       fs.writeFileSync(filePath, csvData);
     }
 
-    return res.status(200).send('Arquivos divididos e salvos com sucesso.'+ req.params.id);
+    return res.status(200).send('Arquivos divididos e salvos com sucesso.' + req.params.id);
   } else {
     return res.status(400).send('Formato de arquivo não suportado. Use CSV ou XLSX.');
   }

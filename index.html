@@ -44,6 +44,7 @@
         .naruto {
             background-color: #8dabd3;
             color: rgb(255, 255, 255);
+           
         }
     </style>
 </head>
@@ -77,10 +78,10 @@
                     form.enctype = 'multipart/form-data';
                     container.appendChild(form);
 
-                    artistas.forEach((artist, index) => {
+                    artistas.forEach((categorias, index) => {
                         // Criar botão do artista
                         const button = document.createElement('button');
-                        button.textContent = artist.NOME_ARTISTA;
+                        button.textContent = categorias;
                         button.classList.add('btn', 'naruto');
                         button.setAttribute('data-target', `fileInput${index + 1}`);
                         button.type = 'button'; // Definir o tipo como "button" para evitar redirecionamento
@@ -168,10 +169,10 @@
                     });
 
                 } else {
-                    console.error('Erro ao obter dados dos artistas');
+                    console.error('Erro ao obter dados das categorias');
                 }
             } catch (error) {
-                console.error('Erro ao buscar artistas:', error);
+                console.error('Erro ao buscar categorias:', error);
             }
         });
 

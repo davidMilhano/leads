@@ -1,54 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload de Arquivos</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    body {
-      background-color: #f8f9fa;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Arquivos</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #004391;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
 
-    .upload-container {
-      text-align: center;
-      padding: 20px;
-      border: 1px solid #ced4da;
-      border-radius: 8px;
-      background-color: #ffffff;
-    }
+        .upload-container {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #004391;
+            border-radius: 8px;
+            margin-right: 60px;
+        }
 
-    .custom-file-label {
-      overflow: hidden;
-      white-space: nowrap;
-    }
+        .custom-file-label {
+            overflow: hidden;
+            white-space: nowrap;
+        }
 
-    .btn-upload {
-      margin-top: 10px;
-    }
-  </style>
+        .btn-upload {
+            margin-top: 10px;
+        }
+
+        img {
+            width: 30%;
+            height: 50%;
+            margin-right: 60px;
+        }
+
+        .naruto {
+            background-color: #8dabd3;
+            color: rgb(255, 255, 255);
+
+        }
+    </style>
 </head>
+
 <body>
+    <img src="imagens/makeitreal.png">
+    <div class="upload-container">
+        <h1 class="mb-4">Upload de Arquivos</h1>
+        <h1 id="myDIV" style="display: none;">Sucesso</h1>
+        <div id="artistas-container">
+            <!-- Os botões e inputs de arquivo serão adicionados dinamicamente aqui -->
+        </div>
+        <button id="btnVoltar" style="display: none;" class="btn btn-secondary mt-3">Voltar</button>
+    </div>
 
-  <div class="upload-container">
-    <h1 class="mb-4">Upload de Arquivos</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <div class="custom-file mb-3">
-        <input type="file" class="custom-file-input" id="fileInput" name="file" accept=".csv, .xlsx" required>
-        <label class="custom-file-label" for="fileInput">Escolha um arquivo</label>
-      </div>
-      <button type="submit" class="btn btn-primary btn-upload">Enviar</button>
-    </form>
-  </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                const response = await axios.get('/get_categorias');
+                const artistas = response.data;
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                if (Array.isArray(artistas)) {
+                    const container = document.getElementById('artistas-container');
+                    const btnVoltar = document.getElementById('btnVoltar');
+                    let botaoClicado = null;
+
+                    // Criar o formulário
+                    const form = document.createElement('form');
+                    form.action = '/upload';
+                    form.method = 'post';
+                    form.enctype = 'multipart/form-data';
+                    container.appendChild(form);
+
+                    artistas.forEach((categorias, index) => {
+                        // Criar botão do artista
+                        const button = document.createElement('button');
+                        button.textContent = categorias;
+                        button.classList.add('btn', 'naruto');
+                        button.setAttribute('data-target', `fileInput${index + 1}`);
+                        button.type = 'button'; // Definir o tipo como "button" para evitar redirecionamento
+                        form.appendChild(button);
+
+                        // Criar input de arquivo
+                        const inputFile = document.createElement('input');
+                        inputFile.type = 'file';
+                        inputFile.style.display = 'none';
+                        inputFile.accept = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                        inputFile.id = `fileInput${index + 1}`;
+                        form.appendChild(inputFile);
+
+                        // Criar botão de envio
+                        const uploadButton = document.createElement('button');
+                        uploadButton.textContent = 'Enviar';
+                        uploadButton.style.display = 'none';
+                        form.appendChild(uploadButton);
+
+                        inputFile.addEventListener('change', function () {
+                            uploadButton.style.display = 'block';
+                        });
+
+                        uploadButton.addEventListener('click', async function () {
+                            const file = inputFile.files[0];
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            const id = inputFile.id.replace('fileInput', '');
+
+                            try {
+                                const response = await axios.post(`/upload/${id}`, formData);
+
+                                if (response.status === 200) {
+                                    console.log('Arquivo enviado com sucesso!');
+                                    var x = document.getElementById("myDIV");
+                                    if (x.style.display === "none") {
+                                        x.style.display = "block";
+                                    } else {
+                                        x.style.display = "none";
+                                    }
+                                } else {
+                                    console.error('Erro ao enviar arquivo:', response.statusText);
+                                }
+                            } catch (error) {
+                                console.error('Erro ao enviar arquivo:', error.message);
+                            }
+                        });
+                    });
+                    const botoes = document.querySelectorAll('#artistas-container button');
+
+                    botoes.forEach(botao => {
+                        botao.addEventListener('click', function () {
+                            botaoClicado = this;
+
+                            const inputs = document.querySelectorAll('input[type="file"]');
+                            inputs.forEach(input => input.style.display = 'none');
+                            botoes.forEach(b => b.style.display = 'none');
+                            btnVoltar.style.display = 'none';
+
+                            const inputId = this.getAttribute('data-target');
+                            const input = document.getElementById(inputId);
+                            input.style.display = 'block';
+
+                            btnVoltar.style.display = 'block';
+                        });
+                    });
+
+                    btnVoltar.addEventListener('click', function () {
+                        const inputId = botaoClicado.getAttribute('data-target');
+                        const input = document.getElementById(inputId);
+                        input.style.display = 'none';
+                        botaoClicado.style.display = 'none';
+                        document.querySelectorAll('button[data-target^="fileInput"]').forEach(btn => btn.style.display = 'block');
+                        document.querySelectorAll('input[type="file"]').forEach(input => input.style.display = 'none');
+                        document.querySelectorAll('button[data-target^="fileInput"]').forEach(btn => btn.style.display = 'block');
+                        btnVoltar.style.display = 'none';
+                    });
+
+
+
+                    // Adicione aqui a lógica para lidar com os botões "Voltar" e a lógica de ocultar/mostrar inputs
+
+                    // Adicione um event listener para o submit do formulário
+                    form.addEventListener('submit', function (event) {
+                        // Evita que o formulário seja submetido de forma padrão
+                        event.preventDefault();
+                        // Você pode adicionar aqui qualquer lógica adicional que desejar antes de enviar o formulário
+                        // Por exemplo, validar se algum input está preenchido, etc.
+                        // Depois, você pode enviar o formulário manualmente, se necessário:
+                        // form.submit();
+                    });
+
+                } else {
+                    console.error('Erro ao obter dados das categorias');
+                }
+            } catch (error) {
+                console.error('Erro ao buscar categorias:', error);
+            }
+        });
+
+
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

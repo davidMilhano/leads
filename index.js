@@ -54,15 +54,6 @@ app.get('/get_categorias', async (req, res) => {
     res.status(500).send('Erro ao buscar categorias.');
   }
 
-  //  const rows = [
-  //   { NOME_ARTISTA: 'Artista 1' },
-  //   { NOME_ARTISTA: 'Artista 2' },
-  //   { NOME_ARTISTA: 'Artista 3' },
-  //   { NOME_ARTISTA: 'anselmo ralph' },
-  //   { NOME_ARTISTA: 'pokemon' }
-  //    // Adicione mais dados conforme necessário
-  // ];
-
 });
 
 // Servir arquivos estáticos
